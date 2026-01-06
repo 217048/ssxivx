@@ -1,0 +1,321 @@
+import React, { useState, useEffect } from 'react';
+import { BookOpen, Coffee, Coins, CheckCircle, HelpCircle, RefreshCw, ChevronRight, Award } from 'lucide-react';
+
+const App = () => {
+  const [activeTab, setActiveTab] = useState('home');
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [score, setScore] = useState(0);
+  const [showResult, setShowResult] = useState(false);
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [quizStatus, setQuizStatus] = useState('idle'); // 'idle', 'ongoing', 'finished'
+
+  const quizData = [
+    {
+      question: "清朝皇帝通常在早上幾點起床？",
+      options: ["凌晨 3:00", "凌晨 5:00", "早上 7:00", "早上 9:00"],
+      answer: 1,
+      explanation: "清朝皇帝極其勤政，通常凌晨 5:00 左右起床，先禮佛、請安後開始早讀。"
+    },
+    {
+      question: "皇帝每天閱讀前朝《實錄》和《寶訓》的活動稱為什麼？",
+      options: ["晨跑", "早會", "早讀", "早朝"],
+      answer: 2,
+      explanation: "皇帝透過早讀學習治國之道，這是每日必備的文化修養。"
+    },
+    {
+      question: "清朝皇帝每天主要吃幾頓正餐？",
+      options: ["一餐", "兩餐", "三餐", "四餐"],
+      answer: 1,
+      explanation: "清宮實行兩餐制：早膳（6:00-8:00）和晚膳（12:00-14:00）。"
+    },
+    {
+      question: "為了安全，皇帝進膳時有一項嚴格規矩，即每道菜最多吃幾口？",
+      options: ["一口", "兩口", "三口", "五口"],
+      answer: 2,
+      explanation: "為了防止他人掌握口味偏好進行下毒，皇帝每道菜「吃不過三口」。"
+    },
+    {
+      question: "乾隆皇帝下江南後，哪一系的菜餚大量進入宮廷？",
+      options: ["川菜", "魯菜", "蘇杭菜", "粵菜"],
+      answer: 2,
+      explanation: "乾隆南巡帶回了蘇杭風格的精緻口味，豐富了宮廷飲食。"
+    },
+    {
+      question: "清朝實行的貨幣制度稱為什麼？",
+      options: ["單一金幣制", "銀錢平行制", "紙幣本位制", "物物交易制"],
+      answer: 1,
+      explanation: "清朝實行「銀錢平行」制度，白銀與銅錢（制錢）同時流通。"
+    },
+    {
+      question: "在清朝，「一吊錢」通常代表多少枚銅錢？",
+      options: ["100枚", "500枚", "1000枚", "2000枚"],
+      answer: 2,
+      explanation: "1000枚銅錢為一吊（或一貫），理論上等於一兩白銀。"
+    },
+    {
+      question: "康乾盛世時，一兩白銀大約可以買到多少斤優質大米？",
+      options: ["10-20斤", "50-80斤", "150-200斤", "500斤以上"],
+      answer: 2,
+      explanation: "盛世時期白銀購買力強，一兩銀可買150-200斤大米。"
+    },
+    {
+      question: "哪位皇帝以極度節儉著稱，甚至穿著補過的龍袍？",
+      options: ["康熙", "乾隆", "道光", "咸豐"],
+      answer: 2,
+      explanation: "道光皇帝生活極其儉樸，甚至鬧出內務府虛報雞蛋價格的笑話。"
+    },
+    {
+      question: "清朝晚期，一兩白銀的購買力發生了什麼變化？",
+      options: ["大幅上升", "維持不變", "大幅下降", "與黃金等值"],
+      answer: 2,
+      explanation: "晚期因賠款與白銀外流，銀價波動，百姓生活成本大幅提升，實際購買力下降。"
+    }
+  ];
+
+  const handleAnswer = (index) => {
+    setSelectedAnswer(index);
+    if (index === quizData[currentQuestion].answer) {
+      setScore(score + 1);
+    }
+    
+    setTimeout(() => {
+      if (currentQuestion + 1 < quizData.length) {
+        setCurrentQuestion(currentQuestion + 1);
+        setSelectedAnswer(null);
+      } else {
+        setShowResult(true);
+        setQuizStatus('finished');
+      }
+    }, 1500);
+  };
+
+  const restartQuiz = () => {
+    setCurrentQuestion(0);
+    setScore(0);
+    setShowResult(false);
+    setSelectedAnswer(null);
+    setQuizStatus('ongoing');
+  };
+
+  return (
+    <div className="min-h-screen bg-stone-50 text-stone-800 font-sans">
+      {/* Header */}
+      <header className="bg-red-900 text-gold-500 py-8 px-4 text-center border-b-4 border-yellow-600">
+        <h1 className="text-4xl font-serif font-bold text-yellow-500">清代皇室文化學習網</h1>
+        <p className="mt-2 text-stone-200 opacity-90">探索大清帝國的日常生活、飲食與經濟</p>
+      </header>
+
+      {/* Navigation */}
+      <nav className="flex justify-center bg-red-800 text-white sticky top-0 z-10 shadow-md">
+        <button onClick={() => setActiveTab('home')} className={`px-6 py-3 flex items-center gap-2 hover:bg-red-700 transition ${activeTab === 'home' ? 'bg-red-700 font-bold border-b-2 border-yellow-400' : ''}`}>
+          <BookOpen size={18} /> 皇帝起居
+        </button>
+        <button onClick={() => setActiveTab('food')} className={`px-6 py-3 flex items-center gap-2 hover:bg-red-700 transition ${activeTab === 'food' ? 'bg-red-700 font-bold border-b-2 border-yellow-400' : ''}`}>
+          <Coffee size={18} /> 御膳文化
+        </button>
+        <button onClick={() => setActiveTab('currency')} className={`px-6 py-3 flex items-center gap-2 hover:bg-red-700 transition ${activeTab === 'currency' ? 'bg-red-700 font-bold border-b-2 border-yellow-400' : ''}`}>
+          <Coins size={18} /> 幣值購買力
+        </button>
+        <button onClick={() => {setActiveTab('quiz'); if(quizStatus === 'idle') setQuizStatus('ongoing');}} className={`px-6 py-3 flex items-center gap-2 hover:bg-red-700 transition ${activeTab === 'quiz' ? 'bg-red-700 font-bold border-b-2 border-yellow-400' : ''}`}>
+          <HelpCircle size={18} /> 知識挑戰
+        </button>
+      </nav>
+
+      <main className="max-w-4xl mx-auto p-6">
+        {activeTab === 'home' && (
+          <section className="animate-in fade-in duration-500">
+            <div className="bg-white p-8 rounded-lg shadow-sm border-l-8 border-red-700">
+              <h2 className="text-3xl font-serif font-bold text-red-900 mb-6 border-b pb-2">皇帝的一天與文化修養</h2>
+              <div className="grid md:grid-cols-2 gap-8">
+                <div>
+                  <h3 className="text-xl font-bold flex items-center gap-2 text-red-800"><CheckCircle size={20} /> 勤政的作息</h3>
+                  <p className="mt-2 text-stone-600 leading-relaxed">
+                    清朝皇帝通常凌晨 5:00 起床，這在現代看來是非常艱辛的。起床後首先要禮佛、向皇太后請安，展現「以孝治天下」的決心。隨後進入「早讀」時間，學習祖輩的治國錄。
+                  </p>
+                  <p className="mt-2 text-stone-600">康熙、雍正、乾隆三代更是勤政典範，每日批閱大量奏摺，鮮少有懈怠之時。</p>
+                </div>
+                <div className="bg-stone-100 p-4 rounded border border-stone-200">
+                  <h3 className="font-bold text-red-800">文化造詣</h3>
+                  <ul className="mt-2 space-y-2 text-stone-700 text-sm">
+                    <li>• <strong>漢學教育：</strong> 皇子從小便需研習儒家經典。</li>
+                    <li>• <strong>藝術成就：</strong> 乾隆熱衷作詩（四萬餘首）與收藏書畫。</li>
+                    <li>• <strong>滿洲根本：</strong> 即使漢化深，仍需精通騎射、摔跤與滿文。</li>
+                    <li>• <strong>休閒娛樂：</strong> 愛好京劇、園林（如圓明園）。</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {activeTab === 'food' && (
+          <section className="animate-in fade-in duration-500">
+            <div className="bg-white p-8 rounded-lg shadow-sm border-l-8 border-orange-600">
+              <h2 className="text-3xl font-serif font-bold text-orange-900 mb-6 border-b pb-2">御膳文化：吃得精更要吃得穩</h2>
+              <div className="space-y-6">
+                <div className="flex flex-col md:flex-row gap-6">
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold text-orange-800">獨特的兩餐制</h3>
+                    <p className="mt-2 text-stone-600">皇帝每天只吃兩頓正餐：早膳（6:00-8:00）與晚膳（12:00-14:00）。雖然餐數少，但每餐規模宏大。</p>
+                  </div>
+                  <div className="flex-1 bg-orange-50 p-4 rounded">
+                    <h3 className="text-lg font-bold text-orange-800">安全守則</h3>
+                    <p className="mt-1 text-sm text-stone-700">為了防毒，「吃不過三口」是死命令。太監在旁侍候，一旦皇帝對某道菜動了第三次筷子，就會立刻撤掉，數月不再上桌。</p>
+                  </div>
+                </div>
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div className="border p-4 rounded text-center">
+                    <span className="block text-2xl mb-2">🍢</span>
+                    <h4 className="font-bold">滿洲傳統</h4>
+                    <p className="text-xs text-stone-500">白肉、血腸、火鍋、餑餑</p>
+                  </div>
+                  <div className="border p-4 rounded text-center">
+                    <span className="block text-2xl mb-2">🥬</span>
+                    <h4 className="font-bold">蘇杭風味</h4>
+                    <p className="text-xs text-stone-500">乾隆南巡後帶入的精緻南方菜</p>
+                  </div>
+                  <div className="border p-4 rounded text-center">
+                    <span className="block text-2xl mb-2">🍽️</span>
+                    <h4 className="font-bold">清末西化</h4>
+                    <p className="text-xs text-stone-500">溥儀時期的西餐與咖啡</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {activeTab === 'currency' && (
+          <section className="animate-in fade-in duration-500">
+            <div className="bg-white p-8 rounded-lg shadow-sm border-l-8 border-yellow-600">
+              <h2 className="text-3xl font-serif font-bold text-yellow-900 mb-6 border-b pb-2">幣值制度與購買力</h2>
+              <div className="space-y-6 text-stone-600">
+                <p>清朝實行「銀錢平行制」，形成了一個有趣的雙軌貨幣系統。</p>
+                
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                    <h3 className="font-bold text-yellow-800 text-lg flex items-center gap-2">
+                      <Coins size={18} /> 白銀 (大額)
+                    </h3>
+                    <p className="mt-2">主要單位為「兩」。用於繳稅、官方交易。清末出現了銀元。</p>
+                  </div>
+                  <div className="p-4 bg-stone-100 rounded-lg border border-stone-300">
+                    <h3 className="font-bold text-stone-700 text-lg flex items-center gap-2">
+                      ⭕ 銅錢 (小額)
+                    </h3>
+                    <p className="mt-2">圓形方孔。1000文為一吊（一兩銀）。百姓日常買菜使用。</p>
+                  </div>
+                </div>
+
+                <div className="bg-stone-800 text-white p-6 rounded-lg">
+                  <h3 className="font-bold text-yellow-400 mb-4 text-center">一兩白銀在康乾盛世能買到什麼？</h3>
+                  <div className="flex justify-around items-center text-center">
+                    <div>
+                      <span className="text-3xl">🍚</span>
+                      <p className="mt-2">150 - 200 斤</p>
+                      <p className="text-xs text-stone-400">優質大米</p>
+                    </div>
+                    <div className="text-2xl">≈</div>
+                    <div>
+                      <span className="text-3xl">💵</span>
+                      <p className="mt-2">約 NT$ 1,200</p>
+                      <p className="text-xs text-stone-400">現代購買力折算</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="italic text-sm text-stone-500 border-t pt-4">
+                  * 註：晚期因銀價上漲與戰亂，購買力大幅衰退，道光年間物價混亂。
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {activeTab === 'quiz' && (
+          <section className="animate-in slide-in-from-bottom duration-500">
+            <div className="bg-white p-8 rounded-lg shadow-lg">
+              {quizStatus === 'ongoing' && (
+                <div>
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-2xl font-bold text-red-900">清代知識測驗</h2>
+                    <span className="text-stone-500 font-mono">第 {currentQuestion + 1} / {quizData.length} 題</span>
+                  </div>
+                  
+                  <div className="mb-8">
+                    <h3 className="text-xl mb-4 font-semibold">{quizData[currentQuestion].question}</h3>
+                    <div className="grid gap-3">
+                      {quizData[currentQuestion].options.map((option, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => selectedAnswer === null && handleAnswer(idx)}
+                          className={`w-full p-4 text-left rounded-lg border transition-all ${
+                            selectedAnswer === null 
+                              ? 'hover:bg-stone-100 border-stone-200' 
+                              : idx === quizData[currentQuestion].answer 
+                                ? 'bg-green-100 border-green-500 text-green-700 font-bold' 
+                                : selectedAnswer === idx 
+                                  ? 'bg-red-100 border-red-500 text-red-700' 
+                                  : 'border-stone-200 opacity-50'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className="w-8 h-8 rounded-full bg-stone-200 flex items-center justify-center text-stone-600 font-bold">{String.fromCharCode(65 + idx)}</span>
+                            {option}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {selectedAnswer !== null && (
+                    <div className="p-4 bg-blue-50 text-blue-800 rounded-lg animate-in fade-in">
+                      <p className="font-bold flex items-center gap-2"><HelpCircle size={16}/> 知識解析：</p>
+                      <p className="mt-1 text-sm">{quizData[currentQuestion].explanation}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {quizStatus === 'finished' && (
+                <div className="text-center py-10">
+                  <div className="inline-block p-6 rounded-full bg-yellow-100 text-yellow-600 mb-4">
+                    <Award size={64} />
+                  </div>
+                  <h2 className="text-3xl font-bold text-stone-800">挑戰完成！</h2>
+                  <p className="text-5xl font-black text-red-600 my-6">{score * 10} 分</p>
+                  <p className="text-stone-600 mb-8">
+                    您的成績：{score} / {quizData.length} 正確
+                    <br />
+                    {score >= 8 ? "您真是清朝文化達人！" : score >= 5 ? "不錯喔，對清朝已有基礎認識！" : "再多讀幾遍上面的資料吧！"}
+                  </p>
+                  <button 
+                    onClick={restartQuiz}
+                    className="flex items-center gap-2 mx-auto bg-red-700 text-white px-8 py-3 rounded-full hover:bg-red-800 transition shadow-lg"
+                  >
+                    <RefreshCw size={20} /> 重新挑戰
+                  </button>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-stone-200 py-10 text-center text-stone-500 mt-20 border-t border-stone-300">
+        <p>© 2024 清朝歷史文化數位教室</p>
+        <p className="text-xs mt-2 italic">資料來源：歷史文獻與清宮檔案整理</p>
+      </footer>
+
+      {/* Tailwind Style Helper (for preview environments that might need it) */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&display=swap');
+        .font-serif { font-family: 'Noto Serif TC', serif; }
+        .text-gold-500 { color: #d4af37; }
+      `}} />
+    </div>
+  );
+};
+
+export default App;
